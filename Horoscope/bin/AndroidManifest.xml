@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.horoscope" 
+    android:versionCode="1"
+    android:versionName="1.0">
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MyActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Aries"
+            android:label="Aries"/>
+        <activity android:name=".Taurus"
+            android:label="Taurus"/>
+        <activity android:name=".Gemini"
+            android:label="Gemini"/>
+        <activity android:name=".Cancer"
+            android:label="Cancer"/>
+        <activity android:name=".Leo"
+            android:label="Leo"/>
+        <activity android:name=".Virgo"
+            android:label="Virgo"/>
+        <activity android:name=".Libra"
+            android:label="Libra"/>
+        <activity android:name=".Scorpio"
+            android:label="Scorpio"/>
+        <activity android:name=".Sagittarius"
+            android:label="Sagittarius"/>
+        <activity android:name=".Capricorn"
+            android:label="Capricorn"/>
+        <activity android:name=".Aquarius"
+            android:label="Aquarius"/>
+        <activity android:name=".Pisces"
+            android:label="Pisces"/>
+    </application>
+
+</manifest>
