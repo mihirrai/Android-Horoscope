@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
@@ -28,10 +32,37 @@ public class MyActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        if(isOnline())
+        check c=new check();
+        try {
+			c.execute().get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if(connected){
         	init();
+        }
+        else{
+        	new AlertDialog.Builder(this)
+        	.setTitle("No Connection")
+        	.setMessage("Please check connection")
+        	.show();
+        }
+        
+    }
+    
+    public class check extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			if(isOnline())
+	        	connected=true;
+			else
+				connected=false;
+			return null;	
+		}
+    	
     }
 
     private boolean isOnline() {
@@ -48,10 +79,6 @@ public class MyActivity extends Activity implements View.OnClickListener {
                 e.printStackTrace();
             }
     	}
-            else{
-            	new AlertDialog.Builder(getBaseContext())
-    			.setTitle("No connection").show();
-            }
         return false;
 	}
 
