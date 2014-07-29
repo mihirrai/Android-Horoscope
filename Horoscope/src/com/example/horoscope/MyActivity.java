@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,31 +25,41 @@ public class MyActivity extends Activity implements View.OnClickListener {
 
     ImageButton a,b,c,d,e,f,g,h,i,j,k,l;
     boolean connected,online;
+    ProgressDialog pro;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        check c=new check();
-        try {
+        check chk=new check();
+        chk.execute();
+        /*try {
 			c.execute().get();
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-        if(connected){
-        	init();
-        }
-        else{
-        	new AlertDialog.Builder(this)
-        	.setTitle("No Connection")
-        	.setMessage("Please check connection")
-        	.show();
-        }
+		}*/
+        
+        init();
         
     }
     
     public class check extends AsyncTask<Void, Void, Void>{
+    	
+    	ProgressDialog dialog = new ProgressDialog(MyActivity.this);
+    	@Override
+    	protected void onPreExecute() {
+    		// TODO Auto-generated method stub
+    		dialog.setMessage("Please Wait");
+    		dialog.setIndeterminate(false);
+    		dialog.setCancelable(false);
+    		dialog.setCanceledOnTouchOutside(false);
+    		dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialog.show();
+    		super.onPreExecute();
+    		
+    	}
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -62,22 +70,51 @@ public class MyActivity extends Activity implements View.OnClickListener {
 				connected=false;
 			return null;	
 		}
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			if(dialog != null && dialog.isShowing()){
+			       dialog.dismiss();
+			}
+			if(!connected){
+	        	new AlertDialog.Builder(MyActivity.this)
+	        	.setTitle("Error")
+	        	.setMessage("Check Connection")
+	        	.setCancelable(false)
+				.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						finish();
+					}
+				}).show();
+	        }
+			super.onPostExecute(result);
+			
+		}
     	
     }
 
     private boolean isOnline() {
     	if (isConnected()) {
-            try {
-            	HttpURLConnection urlc = (HttpURLConnection)(new URL("http://www.google.com").openConnection());  // or any valid link.
-                urlc.setRequestProperty("User-Agent", "Test");
-                urlc.setRequestProperty("Connection", "close");
-                urlc.setConnectTimeout(1500); 
-                urlc.connect();
-                return (urlc.getResponseCode() == 200);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+    		 try {
+    	            URL url = new URL("http://www.google.com");  // or any valid link.
+    	            HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+    	            urlc.setConnectTimeout(3000);
+    	            urlc.connect();
+    	            if (urlc.getResponseCode() == 200) {
+    	                return true;
+    	            }
+    	            else
+    	            	return false;
+    	        } catch (MalformedURLException e1) {
+    	            // TODO Auto-generated catch block
+    	            e1.printStackTrace();
+    	        } catch (IOException e) {
+    	            // TODO Auto-generated catch block
+    	            e.printStackTrace();
+    	        }
     	}
         return false;
 	}
